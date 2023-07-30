@@ -1,7 +1,39 @@
 import axios from 'axios'
-import { MessageBox, Message } from 'element-ui'
+import { MessageBox, Message, Loading } from 'element-ui'
 import store from '@/store'
 import { getToken } from '@/utils/auth'
+
+let loading // 定义loading变量
+
+function startLoading() { // 使用Element loading-start 方法
+  loading = Loading.service({
+    lock: true,
+    text: '加载中……',
+    background: 'rgba(0, 0, 0, 0.7)'
+  })
+}
+function endLoading() { // 使用Element loading-close 方法
+  loading.close()
+}
+// 那么 showFullScreenLoading() tryHideFullScreenLoading() 要干的事儿就是将同一时刻的请求合并。
+// 声明一个变量 needLoadingRequestCount，每次调用showFullScreenLoading方法 needLoadingRequestCount + 1。
+// 调用tryHideFullScreenLoading()方法，needLoadingRequestCount - 1。needLoadingRequestCount为 0 时，结束 loading。
+let needLoadingRequestCount = 0
+export function showFullScreenLoading() {
+  if (needLoadingRequestCount === 0) {
+    startLoading()
+  }
+  needLoadingRequestCount++
+}
+
+export function tryHideFullScreenLoading() {
+  console.log('tryHideFullScreenLoading')
+  if (needLoadingRequestCount <= 0) return
+  needLoadingRequestCount--
+  if (needLoadingRequestCount === 0) {
+    endLoading()
+  }
+}
 
 // create an axios instance
 const service = axios.create({
@@ -21,6 +53,7 @@ service.interceptors.request.use(
       // please modify it according to the actual situation
       config.headers['X-Token'] = getToken()
     }
+    showFullScreenLoading()
     return config
   },
   error => {
@@ -46,7 +79,7 @@ service.interceptors.response.use(
     const res = response.data
 
     // if the custom code is not 20000, it is judged as an error.
-    if (res.code !== 20000) {
+    if (res.code !== 200) {
       Message({
         message: res.message || 'Error',
         type: 'error',
@@ -66,8 +99,10 @@ service.interceptors.response.use(
           })
         })
       }
+      tryHideFullScreenLoading()
       return Promise.reject(new Error(res.message || 'Error'))
     } else {
+      tryHideFullScreenLoading()
       return res
     }
   },
@@ -78,6 +113,8 @@ service.interceptors.response.use(
       type: 'error',
       duration: 5 * 1000
     })
+    console.log('响应失败   tryHideFullScreenLoading()')
+    tryHideFullScreenLoading()
     return Promise.reject(error)
   }
 )
