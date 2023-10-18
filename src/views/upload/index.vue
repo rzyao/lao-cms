@@ -45,7 +45,7 @@
 <script>
 import Form from './Form.vue'
 import Modify from './Modify.vue'
-import { getUnitInfo, deleteUnit } from '@/api/unit'
+import { getUnitList, deleteUnit } from '@/api/unit'
 export default {
   name: 'Upload',
   components: {
@@ -70,11 +70,11 @@ export default {
     }
   },
   mounted() {
-    this.getUnitInfo()
+    this.getUnitList()
   },
   methods: {
-    getUnitInfo() {
-      getUnitInfo().then(res => {
+    getUnitList() {
+      getUnitList().then(res => {
         const list = res.data
         const length = list.length
         for (let i = 0; i < length; i++) {

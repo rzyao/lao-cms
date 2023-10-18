@@ -14,6 +14,13 @@ export function updateUnitInfo(data) {
     data
   })
 }
+export function getUnitList(token) {
+  return request({
+    url: '/api/unit/list',
+    method: 'get',
+    params: { token }
+  })
+}
 export function getUnitInfo(token) {
   return request({
     url: '/api/unit/info',
