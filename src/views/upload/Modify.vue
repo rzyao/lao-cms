@@ -10,8 +10,14 @@
       >
         <el-input v-model="unit.chinese" />
       </el-form-item>
+      <el-form-item label="释义">
+        <el-input v-model="form.description" />
+      </el-form-item>
       <el-form-item label="老语">
         <el-input v-model="unit.lao" />
+      </el-form-item>
+      <el-form-item label="音标">
+        <el-input v-model="form.phonetic" />
       </el-form-item>
       <el-form-item label="类型">
         <el-select v-model="unit.type" placeholder="请选择类型">
@@ -100,7 +106,7 @@ export default {
           label: '句子'
         }
       ],
-      value: '0'
+      value: ''
     }
   },
   methods: {
@@ -181,7 +187,7 @@ export default {
     <style lang="scss" scoped>
     .container {
       width: 500px;
-      height: 500px;
+      height: 600px;
       margin: 0 auto;
       background-color: #fff;
       border: 1px solid #ccc;
