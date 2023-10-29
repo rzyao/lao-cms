@@ -12,8 +12,26 @@
           <span slot-scope="{ node, data }" class="custom-tree-node">
             <span>{{ node.label }}</span>
             <span>
-              <el-button type="primary" size="medium" @click="() => append(data)">
+              <el-button
+                type="success"
+                size="mini"
+                @click="() => add(data)"
+              >
                 添加
+              </el-button>
+              <el-button
+                type="primary"
+                size="mini"
+                @click="() => openModify(data)"
+              >
+                编辑
+              </el-button>
+              <el-button
+                type="success"
+                size="mini"
+                @click="() => append(data)"
+              >
+                发布
               </el-button>
               <el-button
                 type="danger"
@@ -27,13 +45,25 @@
         </el-tree>
       </div>
     </div>
+    <div v-if="isCreate" class="form">
+      <CreateColumn @onCancel="closeColumn" @onSave="append" />
+    </div>
+    <div v-if="isModify" class="form">
+      <ModifyColumn :column="column" @onCancel="closeModify" @onSave="modify" />
+    </div>
   </div>
 </template>
 
 <script>
+import ModifyColumn from './ModifyColumn.vue'
+import CreateColumn from './CreateColumn.vue'
 let id = 1000
-
 export default {
+  name: 'Column',
+  components: {
+    ModifyColumn,
+    CreateColumn
+  },
   data() {
     const data = [
       {
@@ -86,54 +116,71 @@ export default {
       }
     ]
     return {
-      data: JSON.parse(JSON.stringify(data))
+      data: JSON.parse(JSON.stringify(data)),
+      isCreate: false,
+      isModify: false,
+      currentData: {},
+      column: {}
     }
   },
 
   methods: {
-    append(data) {
-      const newChild = { id: id++, label: 'testtest', children: [] }
+    append(children) {
+      const data = this.currentData
+      this.isCreate = false
+      const newChild = { id: id++, label: children.name, children: [] }
       if (!data.children) {
         this.$set(data, 'children', [])
       }
       data.children.push(newChild)
     },
-
     remove(node, data) {
       const parent = node.parent
       const children = parent.data.children || parent.data
       const index = children.findIndex((d) => d.id === data.id)
       children.splice(index, 1)
     },
-
-    renderContent(h, { node, data, store }) {
-      return (
-        <span class='custom-tree-node'>
-          <span>{node.label}</span>
-          <span>
-            <el-button
-              size='mini'
-              type='text'
-              on-click={() => this.append(data)}
-            >
-              Append
-            </el-button>
-            <el-button
-              size='mini'
-              type='text'
-              on-click={() => this.remove(node, data)}
-            >
-              Delete
-            </el-button>
-          </span>
-        </span>
-      )
+    add(data) {
+      this.currentData = data
+      this.isCreate = true
+    },
+    closeColumn() {
+      console.log('closeColumn')
+      this.isCreate = false
+    },
+    openModify(data) {
+      this.isModify = true
+      this.column.id = data.id
+      this.column.label = data.label
+      console.log(this.column)
+    },
+    closeModify() {
+      this.isModify = false
+    },
+    modify(column) {
+      this.isModify = false
+      this.find(column)
+    },
+    find(column) {
+      const id = column.id
+      const data = this.data
+      for (let i = 0; i < data.length; i++) {
+        const item = data[i]
+        if (item.id === id) {
+          this.data[i].label = column.label
+          break
+        } else {
+          if (item.children) {
+            this.find(item.children)
+          }
+        }
+      }
     }
   }
 }
 </script>
 
-<style>
+<style lang="scss" scoped>
 .box {
   width: 100%;
   height: 100%;
@@ -146,5 +193,22 @@ export default {
   justify-content: space-between;
   font-size: 16px;
   padding-right: 8px;
+}
+::v-deep .el-tree-node__content {
+  height: 36px;
+  // 设置border-bottom为虚线
+  border-bottom: 1px dashed rgba($color: #1473c0, $alpha: 0.2);
+}
+.form {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(136, 135, 135, 0.5);
+  z-index: 100;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>

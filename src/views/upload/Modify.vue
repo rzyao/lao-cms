@@ -11,13 +11,13 @@
         <el-input v-model="unit.chinese" />
       </el-form-item>
       <el-form-item label="释义">
-        <el-input v-model="form.description" />
+        <el-input v-model="unit.description" />
       </el-form-item>
       <el-form-item label="老语">
         <el-input v-model="unit.lao" />
       </el-form-item>
       <el-form-item label="音标">
-        <el-input v-model="form.phonetic" />
+        <el-input v-model="unit.phonetic" />
       </el-form-item>
       <el-form-item label="类型">
         <el-select v-model="unit.type" placeholder="请选择类型">
