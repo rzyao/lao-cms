@@ -78,6 +78,17 @@ export const constantRoutes = [
       }
     ]
   }, {
+    path: '/column',
+    component: Layout,
+    children: [
+      {
+        path: 'column',
+        component: () => import('@/views/column/index'),
+        name: 'Column',
+        meta: { title: '栏目管理', icon: 'documentation', affix: true }
+      }
+    ]
+  }, {
     path: '/tab',
     component: Layout,
     children: [
