@@ -120,7 +120,8 @@ export default {
       isCreate: false,
       isModify: false,
       currentData: {},
-      column: {}
+      column: {},
+      result: []
     }
   },
 
@@ -133,16 +134,19 @@ export default {
         this.$set(data, 'children', [])
       }
       data.children.push(newChild)
+      this.split()
     },
     remove(node, data) {
       const parent = node.parent
       const children = parent.data.children || parent.data
       const index = children.findIndex((d) => d.id === data.id)
       children.splice(index, 1)
+      this.split()
     },
     add(data) {
       this.currentData = data
       this.isCreate = true
+      this.split()
     },
     closeColumn() {
       console.log('closeColumn')
@@ -153,28 +157,58 @@ export default {
       this.column.id = data.id
       this.column.label = data.label
       console.log(this.column)
+      this.split()
     },
     closeModify() {
       this.isModify = false
     },
     modify(column) {
       this.isModify = false
-      this.find(column)
+      const result = this.result
+      for (let i = 0; i < result.length; i++) {
+        const item = result[i]
+        if (item.id === column.id) {
+          item.label = column.label
+          // 修改data对应的label
+        }
+      }
+      this.merge()
     },
-    find(column) {
-      const id = column.id
+    split() {
+      // 把树形结构的数据转换成一维数组，添加parent_id，要求数组可以组装成树形结构
       const data = this.data
-      for (let i = 0; i < data.length; i++) {
-        const item = data[i]
-        if (item.id === id) {
-          this.data[i].label = column.label
-          break
-        } else {
+      const result = []
+      const find = (data, parent_id) => {
+        for (let i = 0; i < data.length; i++) {
+          const item = data[i]
+          const obj = {
+            id: item.id,
+            label: item.label,
+            parent_id: parent_id
+          }
+          result.push(obj)
           if (item.children) {
-            this.find(item.children)
+            find(item.children, item.id)
           }
         }
       }
+      find(data, 0)
+      this.result = result
+    },
+    merge() {
+      // 把一维数组组装成树形结构对象
+      const list = this.result
+      const arrayToTree = (arr, pid) => {
+        return arr.reduce((res, current) => {
+          if (current['parent_id'] === pid) {
+            current.children = arrayToTree(arr, current['id'])
+            return res.concat(current)
+          }
+          return res
+        }, [])
+      }
+      console.log(arrayToTree(list, 0))
+      this.data = arrayToTree(list, 0)
     }
   }
 }
