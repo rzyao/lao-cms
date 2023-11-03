@@ -38,6 +38,7 @@
 </template>
 
 <script>
+import { updateColumn } from '@/api/column'
 export default {
   name: 'ModifyColumn',
   props: {
@@ -64,15 +65,15 @@ export default {
       text: '',
       options: [
         {
-          value: '0',
+          value: 0,
           label: '动态页面'
         },
         {
-          value: '1',
+          value: 1,
           label: '静态页面'
         }
       ],
-      value: '0'
+      value: this.column.type
     }
   },
   mounted() {
@@ -89,7 +90,20 @@ export default {
           console.log('save!')
           this.form.type = this.value
           console.log(this.form)
-          this.$emit('onSave', this.form)
+          const data = {
+            id: this.form.id,
+            name: this.form.label,
+            description: this.form.description,
+            type: this.form.type
+          }
+          updateColumn(data).then((res) => {
+            console.log(res)
+            this.$message({
+              message: '修改成功',
+              type: 'success'
+            })
+            this.$emit('onSave', this.form)
+          })
         } else {
           console.log('error submit!!')
           return false

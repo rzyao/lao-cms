@@ -36,14 +36,28 @@
 </template>
 
 <script>
+import { createColumn } from '@/api/column'
 export default {
   name: 'CreateColumn',
+  props: {
+    column: {
+      type: Object,
+      default: () => {
+        return {
+          parent_id: '',
+          sort: 0
+        }
+      }
+    }
+  },
   data() {
     return {
       form: {
         name: '',
         type: '',
-        description: ''
+        description: '',
+        sort: this.column.sort,
+        parent_id: this.column.parent_id
       },
       fileList: [
       ],
@@ -68,8 +82,9 @@ export default {
         if (valid) {
           console.log('save!')
           this.form.type = this.value
-          console.log(this.form)
-          this.$emit('onSave', this.form)
+          // this.form.parent_id = this.column.parent_id
+          // this.form.sort = this.column.sort
+          this.create(this.form)
         } else {
           console.log('error submit!!')
           return false
@@ -79,6 +94,17 @@ export default {
     cancel() {
       console.log('cancel')
       this.$emit('onCancel')
+    },
+    create(column) {
+      createColumn(this.form).then(res => {
+        if (res.code === 200) {
+          this.$message({
+            message: '创建成功',
+            type: 'success'
+          })
+          this.$emit('onSave', column)
+        }
+      })
     }
   }
 }

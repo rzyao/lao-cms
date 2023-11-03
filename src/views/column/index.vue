@@ -12,13 +12,21 @@
           <span slot-scope="{ node, data }" class="custom-tree-node">
             <span>{{ node.label }}</span>
             <span>
-              <el-button
-                type="success"
-                size="mini"
-                @click="() => add(data)"
-              >
+              <el-button type="success" size="mini" @click="() => add(data)">
                 添加
               </el-button>
+              <el-button
+                type="primary"
+                size="mini"
+                icon="el-icon-top"
+                @click="() => moveUp(data)"
+              />
+              <!-- <el-button
+                type="primary"
+                size="mini"
+                icon="el-icon-bottom"
+                @click="() => moveDown(data)"
+              /> -->
               <el-button
                 type="primary"
                 size="mini"
@@ -26,12 +34,11 @@
               >
                 编辑
               </el-button>
-              <el-button
-                type="success"
-                size="mini"
-                @click="() => append(data)"
-              >
-                发布
+              <el-button :type="(data.is_publish?'success':'info')" size="mini">
+                {{ (data.is_publish ? '已发布' : '未发布') }}
+              </el-button>
+              <el-button type="success" size="mini" @click="() => publish(data)">
+                {{ (data.is_publish ? '撤销' : '发布') }}
               </el-button>
               <el-button
                 type="danger"
@@ -46,7 +53,11 @@
       </div>
     </div>
     <div v-if="isCreate" class="form">
-      <CreateColumn @onCancel="closeColumn" @onSave="append" />
+      <CreateColumn
+        :column="newColumn"
+        @onCancel="closeColumn"
+        @onSave="append"
+      />
     </div>
     <div v-if="isModify" class="form">
       <ModifyColumn :column="column" @onCancel="closeModify" @onSave="modify" />
@@ -57,6 +68,7 @@
 <script>
 import ModifyColumn from './ModifyColumn.vue'
 import CreateColumn from './CreateColumn.vue'
+import { getColumnList, deleteColumn, updateColumn } from '@/api/column'
 let id = 1000
 export default {
   name: 'Column',
@@ -65,66 +77,22 @@ export default {
     CreateColumn
   },
   data() {
-    const data = [
-      {
-        id: 1,
-        label: '一级 1',
-        children: [
-          {
-            id: 4,
-            label: '二级 1-1',
-            children: [
-              {
-                id: 9,
-                label: '三级 1-1-1'
-              },
-              {
-                id: 10,
-                label: '三级 1-1-2'
-              }
-            ]
-          }
-        ]
-      },
-      {
-        id: 2,
-        label: '一级 2',
-        children: [
-          {
-            id: 5,
-            label: '二级 2-1'
-          },
-          {
-            id: 6,
-            label: '二级 2-2'
-          }
-        ]
-      },
-      {
-        id: 3,
-        label: '一级 3',
-        children: [
-          {
-            id: 7,
-            label: '二级 3-1'
-          },
-          {
-            id: 8,
-            label: '二级 3-2'
-          }
-        ]
-      }
-    ]
     return {
-      data: JSON.parse(JSON.stringify(data)),
+      data: [],
       isCreate: false,
       isModify: false,
       currentData: {},
       column: {},
-      result: []
+      result: [],
+      newColumn: {
+        parent_id: '',
+        sort: 0
+      }
     }
   },
-
+  mounted() {
+    this.getColumnList()
+  },
   methods: {
     append(children) {
       const data = this.currentData
@@ -136,15 +104,55 @@ export default {
       data.children.push(newChild)
       this.split()
     },
-    remove(node, data) {
+    delete(node, data) {
       const parent = node.parent
       const children = parent.data.children || parent.data
       const index = children.findIndex((d) => d.id === data.id)
       children.splice(index, 1)
       this.split()
     },
+    remove(node, data) {
+      console.log('remove')
+      // confirm是否删除
+      this.$confirm('此操作将永久删除该栏目, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(() => {
+          deleteColumn(data.id).then((res) => {
+            if (res.code === 200) {
+              this.$message({
+                type: 'success',
+                message: '删除成功!'
+              })
+              this.delete(node, data)
+            }
+          })
+        })
+        .catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          })
+        })
+    },
     add(data) {
+      console.log('add')
       this.currentData = data
+      // 获取当前节点children的最大sort
+      let max = 0
+      if (data.children) {
+        const children = data.children
+        for (let i = 0; i < children.length; i++) {
+          const item = children[i]
+          if (item.sort > max) {
+            max = item.sort
+          }
+        }
+      }
+      this.newColumn.sort = max === 0 ? 0 : max + 1
+      this.newColumn.parent_id = data.id
       this.isCreate = true
       this.split()
     },
@@ -156,6 +164,9 @@ export default {
       this.isModify = true
       this.column.id = data.id
       this.column.label = data.label
+      this.column.description = data.description
+      this.column.sort = data.sort
+      this.column.type = data.type
       console.log(this.column)
       this.split()
     },
@@ -164,11 +175,12 @@ export default {
     },
     modify(column) {
       this.isModify = false
-      const result = this.result
+      const result = this.split()
       for (let i = 0; i < result.length; i++) {
         const item = result[i]
         if (item.id === column.id) {
           item.label = column.label
+          item.description = column.description
           // 修改data对应的label
         }
       }
@@ -184,7 +196,9 @@ export default {
           const obj = {
             id: item.id,
             label: item.label,
-            parent_id: parent_id
+            parent_id: parent_id,
+            description: item.description,
+            sort: item.sort
           }
           result.push(obj)
           if (item.children) {
@@ -194,6 +208,7 @@ export default {
       }
       find(data, 0)
       this.result = result
+      return result
     },
     merge() {
       // 把一维数组组装成树形结构对象
@@ -208,7 +223,107 @@ export default {
         }, [])
       }
       console.log(arrayToTree(list, 0))
-      this.data = arrayToTree(list, 0)
+      const data = arrayToTree(list, 0)
+      function sortChildrenBySort(node) {
+        node.children.sort((a, b) => a.sort - b.sort)
+        for (const child of node.children) {
+          sortChildrenBySort(child)
+        }
+      }
+      sortChildrenBySort(data[0])
+      this.data = data
+      console.log(JSON.stringify(this.data, null, 2))
+    },
+    getColumnList() {
+      getColumnList().then((res) => {
+        const arr = res.data
+        // 添加children
+        const result = arr.reduce(function(prev, item) {
+          prev[item.pid]
+            ? prev[item.pid].push(item)
+            : (prev[item.pid] = [item])
+          return prev
+        }, {})
+        for (const prop in result) {
+          result[prop].forEach(function(item, i) {
+            result[item.id] ? (item.children = result[item.id]) : ''
+          })
+        }
+        const list = result['undefined']
+        console.log(list)
+        // 组装成树形结构
+        const arrayToTree = (arr, pid) => {
+          return arr.reduce((res, current) => {
+            if (current['parent_id'] === pid) {
+              current.children = arrayToTree(arr, current['id'])
+              return res.concat(current)
+            }
+            return res
+          }, [])
+        }
+        const array = arrayToTree(list, '0')
+        const replace = (data) => {
+          for (let i = 0; i < data.length; i++) {
+            const item = data[i]
+            item.label = item.name
+            if (item.children) {
+              replace(item.children)
+            }
+          }
+        }
+        replace(array)
+        this.data = JSON.parse(JSON.stringify(array))
+      })
+    },
+    moveUp(data) {
+      console.log(data)
+      if (data.id === 'root') {
+        this.$message({
+          type: 'info',
+          message: '已经是第一个了！'
+        })
+        return
+      }
+      const parent_id = data.parent_id
+      const oneArray = this.split()
+      const parents = oneArray.filter((item) => item.id === parent_id)
+      const parent = parents[0]
+      const children = oneArray.filter((item) => item.parent_id === parent.id)
+      const index = children.findIndex((d) => d.id === data.id)
+      if (index === 0) {
+        this.$message({
+          type: 'info',
+          message: '已经是第一个了！'
+        })
+        return
+      }
+      children[index - 1].sort = children[index - 1].sort + 1
+      children[index].sort = children[index].sort - 1
+      console.log(children[index].sort)
+      this.merge()
+      const column_one = {
+        id: children[index].id,
+        sort: children[index].sort
+      }
+      const column_two = {
+        id: children[index - 1].id,
+        sort: children[index - 1].sort
+      }
+      updateColumn(column_one)
+      updateColumn(column_two)
+    },
+    publish(data) {
+      const id = data.id
+      const is_publish = data.is_publish
+      updateColumn({ id: id, is_publish: !is_publish }).then((res) => {
+        if (res.code === 200) {
+          this.$message({
+            message: '操作成功',
+            type: 'success'
+          })
+          this.getColumnList()
+        }
+      })
     }
   }
 }
