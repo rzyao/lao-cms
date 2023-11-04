@@ -14,11 +14,11 @@ export function updateUnitInfo(data) {
     data
   })
 }
-export function getUnitList(token) {
+export function getUnitList(data) {
   return request({
     url: '/api/unit/list',
-    method: 'get',
-    params: { token }
+    method: 'post',
+    data
   })
 }
 export function getUnitInfo(token) {
@@ -39,5 +39,12 @@ export function logout() {
   return request({
     url: '/vue-element-admin/user/logout',
     method: 'post'
+  })
+}
+export function queryList(data) {
+  return request({
+    url: '/api/unit/queryList',
+    method: 'post',
+    data
   })
 }

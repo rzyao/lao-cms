@@ -1,11 +1,13 @@
 <template>
-  <div class="control">
-    <audio :src="src" preload="none" />
-    <div class="circal-box" @click="play()">
-      <div class="circal button-play cursor-pointer">
-        <div :class="isPlay ? 'play' : 'pause'">
-          <div class="vertical-left" />
-          <div class="vertical-right" />
+  <div class="app">
+    <div class="control">
+      <audio :src="src" preload="none" />
+      <div class="circal-box" @click="play()">
+        <div class="circal button-play cursor-pointer">
+          <div :class="isPlay ? 'play' : 'pause'">
+            <div class="vertical-left" />
+            <div class="vertical-right" />
+          </div>
         </div>
       </div>
     </div>
@@ -38,6 +40,12 @@ export default {
       })
     },
     play() {
+      if (this.src === '') {
+        return this.$message({
+          message: '音频地址为空,请先上传再尝试播放',
+          type: 'warning'
+        })
+      }
       const audio = document.querySelector(`audio[src="${this.src}"]`)
       console.log(audio)
       if (audio.paused) {
@@ -53,15 +61,25 @@ export default {
 }
 </script>
 <style lang='scss' scoped>
+.app {
+  width: 50px;
+  height: 23px;
+  position: relative;
+  overflow: visible;
+}
 .control {
+  position: absolute;
   width: 50px;
   height: 50px;
   display: flex;
   justify-content: center;
   align-items: center;
+  top: -15px;
+  //设置层级
+  z-index: 100;
   .circal-box {
-    width: 50px;
-    height: 50px;
+    width: 40px;
+    height: 40px;
     display: inline-flex;
     justify-content: center;
     align-items: center;
