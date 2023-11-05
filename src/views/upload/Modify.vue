@@ -159,6 +159,13 @@ export default {
         if (valid) {
           console.log('submit!')
           console.log(this.unit)
+          if (this.unit.type === '单词') {
+            this.unit.type = 2
+          } else if (this.unit.type === '字母') {
+            this.unit.type = 1
+          } else if (this.unit.type === '句子') {
+            this.unit.type = 3
+          }
           updateUnitInfo(this.unit).then(res => {
             console.log(res)
             if (res.code === 200) {

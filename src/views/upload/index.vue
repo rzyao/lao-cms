@@ -271,7 +271,7 @@ export default {
   overflow: visible;
 }
 }
-::v-deep .el-input__inner {
+::v-deep .button-line .el-input__inner {
   width: 120px;
 }
 .box {
