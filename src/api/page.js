@@ -14,11 +14,11 @@ export function updatePage(data) {
     data
   })
 }
-export function getpageList(token) {
+export function getPageList(data) {
   return request({
     url: '/api/page/list',
-    method: 'get',
-    params: { token }
+    method: 'post',
+    data
   })
 }
 export function getpageInfo(token) {
@@ -28,16 +28,46 @@ export function getpageInfo(token) {
     params: { token }
   })
 }
-export function deletepage(data) {
+export function deletePage(id) {
   return request({
     url: '/api/page/delete',
     method: 'post',
-    data
+    data: { id: id }
   })
 }
 export function logout() {
   return request({
     url: '/vue-element-admin/user/logout',
     method: 'post'
+  })
+}
+export function addItem(id) {
+  return request({
+    url: '/api/page/add_item',
+    method: 'post',
+    data: { id: id }
+  })
+}
+
+export function getItemList(id) {
+  return request({
+    url: '/api/page/itemList',
+    method: 'post',
+    data: { id: id }
+  })
+}
+
+export function getPagesAndItems(id) {
+  return request({
+    url: '/api/page/pages-and-items',
+    method: 'post',
+    data: { id: id }
+  })
+}
+export function resertUnitAndPageRelationship(data) {
+  return request({
+    url: '/api/page/resert-relationship',
+    method: 'post',
+    data
   })
 }

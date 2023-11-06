@@ -1,87 +1,135 @@
 <template>
   <div class="box">
-    <div class="button-line">
-      <el-button type="primary" @click="add">新增</el-button>
-    </div>
-    <el-table :data="PageList" border style="width: 100%">
-      <el-table-column fixed prop="created_time" label="创建日期" width="160" />
-      <el-table-column prop="index" label="#" width="60" />
-      <el-table-column prop="title" label="页面标题" />
-      <el-table-column prop="description" label="简介" width="300" />
-      <el-table-column prop="parent_id" label="父节点" />
-      <el-table-column prop="sort" label="排序" />
-      <el-table-column prop="is_publish" label="发布" />
-      <el-table-column prop="type" label="类型" width="50" />
-      <el-table-column label="操作" width="140">
-        <template slot-scope="scope">
-          <el-button
-            type="text"
-            size="small"
-            @click="copy(scope.row.id)"
-          >复制ID</el-button>
-          <el-button
-            type="text"
-            size="small"
-            @click="edit(scope.row)"
-          >编辑</el-button>
-          <el-button
-            type="text"
-            size="small"
-            @click="copy(scope.row.id)"
-          >发布/撤销</el-button>
-          <el-button
-            type="text"
-            size="small"
-            @click="del(scope.row.id)"
-          >删除</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-    <el-dialog
-      title="提示"
-      :visible.sync="dialogVisible"
-      width="30%"
-      :before-close="handleClose"
-    >
-      <span>确定要删除这个页面吗？</span>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="delPage()">确 定</el-button>
-      </span>
-    </el-dialog>
-    <div v-if="formIsShow" class="form">
-      <CreatePage @onCancel="close" />
-    </div>
-    <div v-if="isModify" class="form">
-      <Modify :page="Page" @onCancel="closeModify" />
+    <div class="main-content">
+      <div class="button-line">
+        <div class="add" style="display: flex;height: 28px"><el-button type="success" size="mini" @click="add">新增</el-button></div>
+        <el-form :inline="true" :model="queryDate" size="mini" class="query-form-inline">
+          <el-form-item label="汉语">
+            <el-input v-model="queryDate.chinese" placeholder="模糊查询" clearable />
+          </el-form-item>
+          <el-form-item label="类型">
+            <el-select v-model="queryDate.type" placeholder="选择类型" clearable>
+              <el-option label="字母" value="1" />
+              <el-option label="单词" value="2" />
+              <el-option label="句子" value="3" />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="音频">
+            <el-select v-model="queryDate.audioIsUpload" placeholder="选择状态" clearable>
+              <el-option label="未上传" value="0" />
+              <el-option label="已上传" value="1" />
+            </el-select>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="onSubmit">查询</el-button>
+            <el-button type="info" @click="onResert">重置</el-button>
+          </el-form-item>
+        </el-form>
+      </div>
+      <div class="table-box">
+        <el-table :data="pageList" border style="width: 100%" height="100%" :row-style="rowstyle">
+          <el-table-column fixed prop="created_time" label="创建日期" width="160" />
+          <el-table-column prop="index" label="#" width="60" />
+          <el-table-column prop="name" label="名称" :show-overflow-tooltip="true" width="160" />
+          <el-table-column prop="description" label="简介" :show-overflow-tooltip="true" />
+          <el-table-column prop="type" label="类型" :show-overflow-tooltip="true" width="160" />
+          <el-table-column prop="parent_id" label="父分类" width="160" />
+
+          <el-table-column label="状态" width="70">
+            <template slot-scope="scope">
+              <el-button
+                type="text"
+                size="small"
+                @click="copy(scope.row.id)"
+              >未发布</el-button>
+            </template>
+          </el-table-column>
+          <!-- <el-table-column prop="id" label="ID" width="auto" /> -->
+          <el-table-column label="操作" width="140">
+            <template slot-scope="scope">
+              <el-button
+                type="text"
+                size="small"
+                @click="copy(scope.row.id)"
+              >挂载</el-button>
+              <el-button
+                type="text"
+                size="small"
+                @click="edit(scope.row)"
+              >编辑</el-button>
+              <el-button
+                type="text"
+                size="small"
+                @click="del(scope.row.id)"
+              >删除</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
+      <el-dialog
+        title="提示"
+        :visible.sync="dialogVisible"
+        width="30%"
+        :before-close="handleClose"
+      >
+        <span>确定要删除这条信息吗？</span>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="dialogVisible = false">取 消</el-button>
+          <el-button type="primary" @click="delUnit()">确 定</el-button>
+        </span>
+      </el-dialog>
+      <div v-if="formIsShow" class="form">
+        <CreatePage @onCancel="close" @onSave="onCreate" />
+      </div>
+      <div v-if="isModify" class="form">
+        <ModifyPage :page="page" @onCancel="closeModify" @onSave="onUpdate" />
+      </div>
+      <div class="pagination">
+        <div class="block">
+          <el-pagination
+            background
+            :current-page.sync="currentPage"
+            :page-size="100"
+            layout="total, prev, pager, next"
+            :total="total"
+            @current-change="handleCurrentChange"
+          />
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-import { getPageList, deletePage } from '@/api/page'
+import ModifyPage from './modifyPage.vue'
 import CreatePage from './createPage.vue'
+import { getPageList, deletePage } from '@/api/page'
 export default {
   name: 'Page',
   components: {
+    ModifyPage,
     CreatePage
   },
   data() {
     return {
-      PageList: [],
-      dialogVisible: false,
       formIsShow: false,
       isModify: false,
+      dialogVisible: false,
+      delId: '',
+      pageList: [],
       page: {
         id: '',
-        title: '',
-        parent_id: 0,
-        sort: 0,
-        is_publish: 0,
-        is_delete: 0,
-        type: 0,
-        description: '',
-        is_page: 1
+        name: '',
+        type: '',
+        description: ''
+      },
+      isPlay: false,
+      currentPage: 1,
+      total: 100,
+      queryDate: {
+        chinese: '',
+        type: '',
+        audioIsUpload: ''
       }
     }
   },
@@ -89,26 +137,49 @@ export default {
     this.getPageList()
   },
   methods: {
+    // 使用queryDate作为查询条件
+    onSubmit() {
+      this.getPageList()
+    },
+    onResert() {
+      this.queryDate = {
+        chinese: '',
+        type: '',
+        audioIsUpload: ''
+      }
+    },
+    rowstyle({ row, rowIndex }) {
+      return 'height: 50px'
+    },
+    handleCurrentChange() {
+      console.log('handleCurrentChange')
+      this.getPageList()
+    },
     getPageList() {
-      getPageList().then((res) => {
+      const data = {
+        page: this.currentPage,
+        page_size: 100,
+        chinese: this.queryDate.chinese,
+        type: this.queryDate.type,
+        audioIsUpload: this.queryDate.audioIsUpload
+      }
+      getPageList(data).then((res) => {
         const list = res.data
         const length = list.length
         for (let i = 0; i < length; i++) {
           const element = list[i]
           // element.created_time = element.created_time.replace(/T/g, ' ').replace(/.[\d]{3}Z/, ' ')
           element.created_time = this.formDate(element.created_time)
-          element.index = length - 1 - i
-          if (element.type === '1') {
-            element.type = '字母'
-          } else if (element.type === '2') {
-            element.type = '单词'
-          } else if (element.type === '3') {
-            element.type = '句子'
-          } else {
-            element.type = ''
+          if (element.type === 0) {
+            element.type = '动态页面'
+          } else if (element.type === 1) {
+            element.type = '静态页面'
           }
+          element.index = res.total - (this.currentPage * 100 - 100) - i
         }
-        this.PageList = list
+        this.pageList = list
+        // 转为数字
+        this.total = Number(res.total)
       })
     },
     formDate(dateForm) {
@@ -131,10 +202,17 @@ export default {
     close() {
       // 关闭表单
       this.formIsShow = false
+    },
+    onCreate() {
+      this.formIsShow = false
       this.getPageList()
     },
+
     closeModify() {
       // 关闭表单
+      this.isModify = false
+    },
+    onUpdate() {
       this.isModify = false
       this.getPageList()
     },
@@ -143,11 +221,10 @@ export default {
     },
     edit(row) {
       console.log(row)
-      this.Page.id = row.id
-      this.Page.chinese = row.chinese
-      this.Page.lao = row.lao
-      this.Page.audio_address = row.audio_address
-      this.Page.type = row.type
+      this.page.id = row.id
+      this.page.name = row.name
+      this.page.description = row.description
+      this.page.type = row.type
       this.isModify = true
     },
     del(id) {
@@ -155,7 +232,7 @@ export default {
       this.delId = id
       this.dialogVisible = true
     },
-    delPage() {
+    delUnit() {
       const data = {
         id: this.delId
       }
@@ -184,14 +261,37 @@ export default {
   }
 }
 </script>
+
 <style lang="scss" scoped>
+//去掉播放按钮的表格的边框限制
+::v-deep .el-table_1_column_9  {
+   .cell {
+  overflow: visible;
+}
+}
+::v-deep .button-line .el-input__inner {
+  width: 120px;
+}
 .box {
   width: 100%;
   height: 100%;
-  padding: 20px;
+  padding: 10px;
+}
+.main-content {
+  width: 100%;
+  height: 100%;
+  padding: 10px;
+  border: 1px solid #dfe6ec;
+  //设置阴影
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 }
 .button-line {
   margin-bottom: 10px;
+  display: flex;
+  height: 28px;
+  .query-form-inline {
+    margin-left: 10px;
+  }
 }
 .form {
   position: fixed;
@@ -205,70 +305,16 @@ export default {
   justify-content: center;
   align-items: center;
 }
-.control {
-  width: 50px;
-  height: 50px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  .circal-box {
-    width: 50px;
-    height: 50px;
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-  }
-
-  .circal {
-    margin-top: 5px;
-    width: 40px;
-    height: 40px;
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    background-color: #f1f1f1;
-    border-radius: 50%;
-
-    .pause {
-      display: inline-flex;
-      width: 0;
-      height: 0;
-      border-top: 8px solid transparent;
-      border-bottom: 8px solid transparent;
-      border-left: 14px solid #40b5e4;
-      margin-left: 5px;
-    }
-
-    .play {
-      width: 20px;
-      height: 20px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      margin-bottom: 5px;
-
-      .vertical-left {
-        width: 4px;
-        height: 16px;
-        margin-right: 2px;
-        margin-top: 5px;
-        background-color: #000000;
-      }
-
-      .vertical-right {
-        width: 4px;
-        height: 16px;
-        margin-left: 2px;
-        margin-top: 5px;
-        background-color: #000000;
-      }
-    }
-  }
-
-  .circal:hover {
-    border-radius: 50%;
-    background-color: #e5e5e5;
-  }
+.table-box {
+  height: calc(100% - 85px);
+  overflow: auto;
+}
+.pagination {
+  //设置边框线
+  border-left: 1px solid #dfe6ec;
+  border-bottom: 1px solid #dfe6ec;
+  border-right: 1px solid #dfe6ec;
+  padding: 5px;
+  padding-left: 20px;
 }
 </style>
-

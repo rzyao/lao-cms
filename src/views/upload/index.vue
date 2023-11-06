@@ -42,8 +42,13 @@
             </template>
           </el-table-column>
           <!-- <el-table-column prop="id" label="ID" width="auto" /> -->
-          <el-table-column label="操作" width="140">
+          <el-table-column label="操作" width="180">
             <template slot-scope="scope">
+              <el-button
+                type="text"
+                size="small"
+                @click="choosePage(scope.row.id)"
+              >页面</el-button>
               <el-button
                 type="text"
                 size="small"
@@ -81,6 +86,9 @@
       <div v-if="isModify" class="form">
         <Modify :unit="unit" @onCancel="closeModify" />
       </div>
+      <div v-if="openChoosePage" class="form">
+        <ChoosePage :id="currentId" @onCancel="closeChoosePage" @onSuccess="onSavePageItemSuccess" />
+      </div>
       <div class="pagination">
         <div class="block">
           <el-pagination
@@ -101,20 +109,23 @@
 import Form from './Form.vue'
 import Modify from './Modify.vue'
 import AudioPlayer from './AudioPlayer.vue'
+import ChoosePage from './ChoosePage.vue'
 import { deleteUnit, queryList } from '@/api/unit'
 export default {
   name: 'Upload',
   components: {
     Form,
     Modify,
-    AudioPlayer
+    AudioPlayer,
+    ChoosePage
   },
   data() {
     return {
       formIsShow: false,
       isModify: false,
+      openChoosePage: false,
       dialogVisible: false,
-      delId: '',
+      currentId: '',
       unitList: [],
       unit: {
         id: '',
@@ -141,6 +152,17 @@ export default {
     this.getUnitList()
   },
   methods: {
+    choosePage(id) {
+      this.currentId = id
+      this.openChoosePage = true
+    },
+    onSavePageItemSuccess() {
+      this.getUnitList()
+      this.openChoosePage = false
+    },
+    closeChoosePage() {
+      this.openChoosePage = false
+    },
     // 使用queryDate作为查询条件
     onSubmit() {
       this.getUnitList()
@@ -231,12 +253,12 @@ export default {
     },
     del(id) {
       console.log('del')
-      this.delId = id
+      this.currentId = id
       this.dialogVisible = true
     },
     delUnit() {
       const data = {
-        id: this.delId
+        id: this.currentId
       }
       deleteUnit(data).then((res) => {
         console.log(res)

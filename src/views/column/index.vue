@@ -12,7 +12,7 @@
           <span slot-scope="{ node, data }" class="custom-tree-node">
             <span>{{ node.label }}</span>
             <span>
-              <el-button type="success" size="mini" @click="() => add(data)">
+              <el-button v-if="data.is_page == 0" type="success" size="mini" @click="() => add(data)">
                 添加
               </el-button>
               <el-button
@@ -273,6 +273,7 @@ export default {
         }
         replace(array)
         this.data = JSON.parse(JSON.stringify(array))
+        console.log(this.data)
       })
     },
     moveUp(data) {

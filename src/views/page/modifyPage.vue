@@ -10,7 +10,7 @@
           trigger: 'blur',
         }"
       >
-        <el-input v-model="form.title" />
+        <el-input v-model="form.name" />
       </el-form-item>
       <el-form-item label="简介">
         <el-input v-model="form.description" />
@@ -38,16 +38,29 @@
 </template>
 
 <script>
-import { createPage } from '@/api/page'
+import { updatePage } from '@/api/page'
 export default {
-  name: 'CreatePage',
-
+  name: 'ModifyPage',
+  props: {
+    page: {
+      type: Object,
+      default: () => {
+        return {
+          id: '',
+          name: '',
+          type: '',
+          description: ''
+        }
+      }
+    }
+  },
   data() {
     return {
       form: {
-        name: '',
+        id: this.page.id,
+        name: this.page.name,
         type: '',
-        description: ''
+        description: this.page.description
       },
       fileList: [],
       options: [
@@ -60,7 +73,7 @@ export default {
           label: '静态页面'
         }
       ],
-      type: ''
+      type: this.page.type
     }
   },
   methods: {
@@ -68,17 +81,20 @@ export default {
       // 验证表单
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          console.log('submit!')
-          this.form.type = this.type
-          console.log(this.form)
-          createPage(this.form).then((res) => {
+          if (this.type === '动态页面' || this.type === '0') {
+            this.form.type = '0'
+          } else if (this.type === '静态页面' || this.type === '1') {
+            this.form.type = '1'
+          }
+          const data = this.form
+          updatePage(data).then((res) => {
             console.log(res)
             if (res.code === 200) {
               this.$message({
                 message: '保存成功！',
                 type: 'success'
               })
-              this.$emit('onCreate')
+              this.$emit('onSave')
             }
           })
         } else {
