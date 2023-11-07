@@ -10,12 +10,19 @@
           trigger: 'blur',
         }"
       >
-        <el-input v-model="form.title" />
+        <el-input v-model="form.name" />
       </el-form-item>
       <el-form-item label="简介">
         <el-input v-model="form.description" />
       </el-form-item>
-      <el-form-item label="类型">
+      <el-form-item
+        label="类型"
+        :rules="{
+          required: true,
+          message: '类型不能为空',
+          trigger: 'blur',
+        }"
+      >
         <el-select v-model="type" placeholder="请选择类型">
           <el-option
             v-for="item in options"
@@ -60,7 +67,7 @@ export default {
           label: '静态页面'
         }
       ],
-      type: ''
+      type: '0'
     }
   },
   methods: {
@@ -78,7 +85,7 @@ export default {
                 message: '保存成功！',
                 type: 'success'
               })
-              this.$emit('onCreate')
+              this.$emit('onSuccess')
             }
           })
         } else {

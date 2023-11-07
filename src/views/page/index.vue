@@ -34,14 +34,13 @@
           <el-table-column prop="description" label="简介" :show-overflow-tooltip="true" />
           <el-table-column prop="type" label="类型" :show-overflow-tooltip="true" width="160" />
           <el-table-column prop="parent_id" label="父分类" width="160" />
-
           <el-table-column label="状态" width="70">
             <template slot-scope="scope">
               <el-button
                 type="text"
                 size="small"
                 @click="copy(scope.row.id)"
-              >未发布</el-button>
+              >{{ scope.row.is_publish?'已发布':'未发布' }}</el-button>
             </template>
           </el-table-column>
           <!-- <el-table-column prop="id" label="ID" width="auto" /> -->
@@ -50,7 +49,7 @@
               <el-button
                 type="text"
                 size="small"
-                @click="copy(scope.row.id)"
+                @click="ChoosePage(scope.row.id)"
               >挂载</el-button>
               <el-button
                 type="text"
@@ -79,10 +78,13 @@
         </span>
       </el-dialog>
       <div v-if="formIsShow" class="form">
-        <CreatePage @onCancel="close" @onSave="onCreate" />
+        <CreatePage @onCancel="close" @onSuccess="createPageSuccess" />
       </div>
       <div v-if="isModify" class="form">
         <ModifyPage :page="page" @onCancel="closeModify" @onSave="onUpdate" />
+      </div>
+      <div v-if="openChoosePage" class="form">
+        <ChooseParent :page="page" @onCancel="closeChoosePage" @onSuccess="choosePageSuccess" />
       </div>
       <div class="pagination">
         <div class="block">
@@ -103,17 +105,20 @@
 <script>
 import ModifyPage from './modifyPage.vue'
 import CreatePage from './createPage.vue'
+import ChooseParent from './chooseParent.vue'
 import { getPageList, deletePage } from '@/api/page'
 export default {
   name: 'Page',
   components: {
     ModifyPage,
-    CreatePage
+    CreatePage,
+    ChooseParent
   },
   data() {
     return {
       formIsShow: false,
       isModify: false,
+      openChoosePage: false,
       dialogVisible: false,
       delId: '',
       pageList: [],
@@ -137,6 +142,16 @@ export default {
     this.getPageList()
   },
   methods: {
+    ChoosePage(id) {
+      this.page.id = id
+      this.openChoosePage = true
+    },
+    closeChoosePage() {
+      this.openChoosePage = false
+    },
+    choosePageSuccess() {
+      this.openChoosePage = false
+    },
     // 使用queryDate作为查询条件
     onSubmit() {
       this.getPageList()
@@ -203,7 +218,7 @@ export default {
       // 关闭表单
       this.formIsShow = false
     },
-    onCreate() {
+    createPageSuccess() {
       this.formIsShow = false
       this.getPageList()
     },
