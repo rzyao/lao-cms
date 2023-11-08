@@ -71,3 +71,11 @@ export function resertUnitAndPageRelationship(data) {
     data
   })
 }
+
+export function getPageItems(id) {
+  return request({
+    url: '/api/page/getPageItems',
+    method: 'post',
+    data: { id: id }
+  })
+}

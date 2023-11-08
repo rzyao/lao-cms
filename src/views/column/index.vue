@@ -198,7 +198,8 @@ export default {
             label: item.label,
             parent_id: parent_id,
             description: item.description,
-            sort: item.sort
+            sort: item.sort,
+            is_page: item.is_page
           }
           result.push(obj)
           if (item.children) {
@@ -213,6 +214,7 @@ export default {
     merge() {
       // 把一维数组组装成树形结构对象
       const list = this.result
+      console.log(list)
       const arrayToTree = (arr, pid) => {
         return arr.reduce((res, current) => {
           if (current['parent_id'] === pid) {
@@ -236,6 +238,7 @@ export default {
     },
     getColumnList() {
       getColumnList().then((res) => {
+        console.log(res)
         const arr = res.data
         // 添加children
         const result = arr.reduce(function(prev, item) {
@@ -262,6 +265,14 @@ export default {
           }, [])
         }
         const array = arrayToTree(list, '0')
+        // 排序
+        function sortChildrenBySort(node) {
+          node.children.sort((a, b) => a.sort - b.sort)
+          for (const child of node.children) {
+            sortChildrenBySort(child)
+          }
+        }
+        sortChildrenBySort(array[0])
         const replace = (data) => {
           for (let i = 0; i < data.length; i++) {
             const item = data[i]

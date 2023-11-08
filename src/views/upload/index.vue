@@ -38,6 +38,7 @@
           <el-table-column prop="audio_address" label="音频地址" width="100" :show-overflow-tooltip="true" />
           <el-table-column label="操作" width="70">
             <template slot-scope="scope">
+              <!-- 预加载上传页面播放按钮的表格限制样式在styles/index.css -->
               <AudioPlayer :src="scope.row.audio_address" />
             </template>
           </el-table-column>
@@ -287,10 +288,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-//去掉播放按钮的表格的边框限制
+/* //预加载上传页面播放按钮的表格限制 */
 ::v-deep .el-table_1_column_9  {
-   .cell {
-  overflow: visible;
+  .cell {
+ overflow: visible;
 }
 }
 ::v-deep .button-line .el-input__inner {

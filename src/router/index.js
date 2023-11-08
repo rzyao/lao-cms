@@ -77,7 +77,8 @@ export const constantRoutes = [
         meta: { title: '页面管理', icon: 'documentation', affix: true }
       }
     ]
-  }, {
+  },
+  {
     path: '/column',
     component: Layout,
     children: [
@@ -88,14 +89,15 @@ export const constantRoutes = [
         meta: { title: '栏目管理', icon: 'documentation', affix: true }
       }
     ]
-  }, {
-    path: '/tab',
+  },
+  {
+    path: '/edit',
     component: Layout,
     children: [
       {
-        path: 'index',
-        component: () => import('@/views/tab/index'),
-        name: 'Tab',
+        path: 'edit',
+        component: () => import('@/views/edit/index'),
+        name: 'Edit',
         meta: { title: 'Tab', icon: 'tab' }
       }
     ]

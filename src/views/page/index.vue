@@ -32,8 +32,8 @@
           <el-table-column prop="index" label="#" width="60" />
           <el-table-column prop="name" label="名称" :show-overflow-tooltip="true" width="160" />
           <el-table-column prop="description" label="简介" :show-overflow-tooltip="true" />
-          <el-table-column prop="type" label="类型" :show-overflow-tooltip="true" width="160" />
-          <el-table-column prop="parent_id" label="父分类" width="160" />
+          <el-table-column prop="type" label="类型" :show-overflow-tooltip="true" width="80" />
+          <el-table-column prop="parent_name" label="父分类" width="100" />
           <el-table-column label="状态" width="70">
             <template slot-scope="scope">
               <el-button
@@ -56,6 +56,11 @@
                 size="small"
                 @click="edit(scope.row)"
               >编辑</el-button>
+              <el-button
+                type="text"
+                size="small"
+                @click="jump(scope.row.id)"
+              >内容</el-button>
               <el-button
                 type="text"
                 size="small"
@@ -142,14 +147,25 @@ export default {
     this.getPageList()
   },
   methods: {
+    jump(id) {
+      console.log(this.$router)
+      this.$router.push({
+        path: `/edit/edit`,
+        query: {
+          id: id
+        }
+      })
+    },
     ChoosePage(id) {
       this.page.id = id
       this.openChoosePage = true
     },
     closeChoosePage() {
+      console.log('closeChoosePage')
       this.openChoosePage = false
     },
     choosePageSuccess() {
+      this.getPageList()
       this.openChoosePage = false
     },
     // 使用queryDate作为查询条件

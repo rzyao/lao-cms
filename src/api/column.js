@@ -7,6 +7,13 @@ export function getColumnList(data) {
     data
   })
 }
+export function getColumnArr(data) {
+  return request({
+    url: '/api/column/columnList',
+    method: 'post',
+    data
+  })
+}
 export function createColumn(data) {
   return request({
     url: '/api/column/create',

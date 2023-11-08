@@ -7,6 +7,7 @@
             v-model="currentNodeLabel"
             small="size"
             style="width: 240px;"
+            :disabled="true"
           />
           <div class="tree-box">
             <el-tree
@@ -37,89 +38,27 @@
 </template>
 
 <script>
-import { createPage } from '@/api/page'
+import { updatePage } from '@/api/page'
+import { getColumnArr } from '@/api/column'
 export default {
   name: 'ChooseParent',
-
+  props: {
+    page: {
+      type: Object,
+      default: () => {
+        return {
+          id: '',
+          name: '',
+          type: '',
+          description: ''
+        }
+      }
+    }
+  },
   data() {
     return {
       form: {
-        data: [
-          {
-            id: 1,
-            label: '一级 1',
-            children: [
-              {
-                id: 4,
-                label: '二级 1-1',
-                children: [
-                  {
-                    id: 9,
-                    label: '三级 1-1-1'
-                  },
-                  {
-                    id: 10,
-                    label: '三级 1-1-2'
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            id: 2,
-            label: '一级 2',
-            children: [
-              {
-                id: 5,
-                label: '二级 2-1'
-              },
-              {
-                id: 6,
-                label: '二级 2-2'
-              }
-            ]
-          },
-          {
-            id: 3,
-            label: '一级 3',
-            children: [
-              {
-                id: 7,
-                label: '二级 3-1'
-              },
-              {
-                id: 8,
-                label: '二级 3-2',
-                children: [
-                  {
-                    id: 11,
-                    label: '三级 3-2-1'
-                  },
-                  {
-                    id: 12,
-                    label: '三级 3-2-2'
-                  },
-                  {
-                    id: 13,
-                    label: '三级 3-2-3'
-                  },
-                  {
-                    id: 14,
-                    label: '三级 3-2-1'
-                  },
-                  {
-                    id: 15,
-                    label: '三级 3-2-2'
-                  },
-                  {
-                    id: 16,
-                    label: '三级 3-2-3'
-                  }
-                ]
-              }
-            ]
-          }
-        ]
+        data: []
       },
       defaultProps: {
         children: 'children',
@@ -129,7 +68,57 @@ export default {
       currentNodeLabel: ''
     }
   },
+  mounted() {
+    this.getColumnList()
+  },
   methods: {
+    getColumnList() {
+      getColumnArr().then(res => {
+        console.log(res)
+        if (res.code === 200) {
+          res.data.forEach(item => {
+            item.label = item.name
+          })
+        }
+        const arr = res.data
+        // 添加children
+        const result = arr.reduce(function(prev, item) {
+          prev[item.pid]
+            ? prev[item.pid].push(item)
+            : (prev[item.pid] = [item])
+          return prev
+        }, {})
+        for (const prop in result) {
+          result[prop].forEach(function(item, i) {
+            result[item.id] ? (item.children = result[item.id]) : ''
+          })
+        }
+        const list = result['undefined']
+        console.log(list)
+        // 组装成树形结构
+        const arrayToTree = (arr, pid) => {
+          return arr.reduce((res, current) => {
+            if (current['parent_id'] === pid) {
+              current.children = arrayToTree(arr, current['id'])
+              return res.concat(current)
+            }
+            return res
+          }, [])
+        }
+        const array = arrayToTree(list, '0')
+        const replace = (data) => {
+          for (let i = 0; i < data.length; i++) {
+            const item = data[i]
+            item.label = item.name
+            if (item.children) {
+              replace(item.children)
+            }
+          }
+        }
+        replace(array)
+        this.form.data = JSON.parse(JSON.stringify(array))
+      })
+    },
     handleBoxClick(a, b, c, d) {
       console.log('handleBoxClick')
       if (a.id !== this.currentNodeKey) {
@@ -146,13 +135,14 @@ export default {
       this.$refs.tree.setCheckedKeys([currentNodeKey])
     },
     onSubmit(formName) {
-      // 验证表单
+    // 验证表单
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          console.log('submit!')
-          this.form.type = this.type
-          console.log(this.form)
-          createPage(this.form).then((res) => {
+          const data = {
+            id: this.page.id,
+            parent_id: this.currentNodeKey
+          }
+          updatePage(data).then((res) => {
             console.log(res)
             if (res.code === 200) {
               this.$message({
@@ -190,13 +180,16 @@ export default {
 .form-box {
   display: flex;
   align-items: center;
-  justify-content: center;
+  margin-left: 40px;
+  // justify-content: center;
 }
 .tree-box{
   height: 340px;
   //y轴设置超出显示滚动条
   overflow-y: scroll;
   overflow-x: hidden;
+  //添加阴影
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 }
   //修改滚动条样式
   .tree-box::-webkit-scrollbar {
