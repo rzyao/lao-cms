@@ -28,6 +28,10 @@
       <div class="edit">
         <div class="button-line">
           <el-input />
+          <el-button type="primary">搜索</el-button>
+        </div>
+        <div class="button-line">
+          <el-input />
           <el-button type="primary">添加</el-button>
         </div>
       </div>

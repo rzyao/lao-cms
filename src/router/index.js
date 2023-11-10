@@ -62,7 +62,7 @@ export const constantRoutes = [
         path: 'index',
         component: () => import('@/views/upload/index'),
         name: 'Upload',
-        meta: { title: '上传入口', icon: 'documentation', affix: true }
+        meta: { title: '上传入口', icon: 'documentation' }
       }
     ]
   },
@@ -74,7 +74,7 @@ export const constantRoutes = [
         path: 'page',
         component: () => import('@/views/page/index'),
         name: 'Page',
-        meta: { title: '页面管理', icon: 'documentation', affix: true }
+        meta: { title: '页面管理', icon: 'documentation' }
       }
     ]
   },
@@ -86,7 +86,7 @@ export const constantRoutes = [
         path: 'column',
         component: () => import('@/views/column/index'),
         name: 'Column',
-        meta: { title: '栏目管理', icon: 'documentation', affix: true }
+        meta: { title: '栏目管理', icon: 'documentation' }
       }
     ]
   },
@@ -98,7 +98,8 @@ export const constantRoutes = [
         path: 'edit',
         component: () => import('@/views/edit/index'),
         name: 'Edit',
-        meta: { title: 'Tab', icon: 'tab' }
+        meta: { title: 'Tab', icon: 'tab' },
+        hidden: true
       }
     ]
   }

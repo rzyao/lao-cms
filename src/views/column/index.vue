@@ -4,7 +4,6 @@
       <div class="block">
         <el-tree
           :data="data"
-          show-checkbox
           node-key="id"
           default-expand-all
           :expand-on-click-node="false"
@@ -12,7 +11,12 @@
           <span slot-scope="{ node, data }" class="custom-tree-node">
             <span>{{ node.label }}</span>
             <span>
-              <el-button v-if="data.is_page == 0" type="success" size="mini" @click="() => add(data)">
+              <el-button
+                v-if="data.is_page == 0"
+                type="success"
+                size="mini"
+                @click="() => add(data)"
+              >
                 添加
               </el-button>
               <el-button
@@ -28,24 +32,31 @@
                 @click="() => moveDown(data)"
               /> -->
               <el-button
-                type="primary"
+                :type="data.is_page ===0? 'primary':'info'"
                 size="mini"
                 @click="() => openModify(data)"
               >
                 编辑
               </el-button>
-              <el-button :type="(data.is_publish?'success':'info')" size="mini">
-                {{ (data.is_publish ? '已发布' : '未发布') }}
+              <el-button
+                :type="data.is_publish ? 'success' : 'info'"
+                size="mini"
+              >
+                {{ data.is_publish ? "已发布" : "未发布" }}
               </el-button>
-              <el-button type="success" size="mini" @click="() => publish(data)">
-                {{ (data.is_publish ? '撤销' : '发布') }}
+              <el-button
+                type="success"
+                size="mini"
+                @click="() => publish(data)"
+              >
+                {{ data.is_publish ? "撤销" : "发布" }}
               </el-button>
               <el-button
                 type="danger"
                 size="mini"
                 @click="() => remove(node, data)"
               >
-                删除
+                {{ data.is_page == 0 ? '删除' : '移除' }}
               </el-button>
             </span>
           </span>
@@ -161,6 +172,13 @@ export default {
       this.isCreate = false
     },
     openModify(data) {
+      if (data.is_page === 1) {
+        this.$message({
+          type: 'warning',
+          message: '请到页面管理中修改页面信息！'
+        })
+        return
+      }
       this.isModify = true
       this.column.id = data.id
       this.column.label = data.label

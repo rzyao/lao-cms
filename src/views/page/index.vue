@@ -34,7 +34,7 @@
           <el-table-column prop="description" label="简介" :show-overflow-tooltip="true" />
           <el-table-column prop="type" label="类型" :show-overflow-tooltip="true" width="80" />
           <el-table-column prop="parent_name" label="父分类" width="100" />
-          <el-table-column label="状态" width="70">
+          <el-table-column label="状态" width="60">
             <template slot-scope="scope">
               <el-button
                 type="text"
@@ -44,7 +44,7 @@
             </template>
           </el-table-column>
           <!-- <el-table-column prop="id" label="ID" width="auto" /> -->
-          <el-table-column label="操作" width="140">
+          <el-table-column label="操作" width="160">
             <template slot-scope="scope">
               <el-button
                 type="text"
