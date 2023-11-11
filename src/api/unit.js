@@ -21,11 +21,11 @@ export function getUnitList(data) {
     data
   })
 }
-export function getUnitInfo(token) {
+export function getUnitInfo(id) {
   return request({
     url: '/api/unit/info',
     method: 'get',
-    params: { token }
+    params: { id }
   })
 }
 export function deleteUnit(data) {
@@ -44,6 +44,13 @@ export function logout() {
 export function queryList(data) {
   return request({
     url: '/api/unit/queryList',
+    method: 'post',
+    data
+  })
+}
+export function queryUnitLike(data) {
+  return request({
+    url: '/api/unit/query-chinese-like',
     method: 'post',
     data
   })

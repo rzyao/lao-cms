@@ -26,8 +26,13 @@
 .button-line{
     width: 100%;
     display: flex;
-    justify-content: center;
     margin-top: 20px
+}
+.button_line_save{
+    width: 100%;
+    display: flex;
+    margin-top: 80px;
+    padding-left: 30px;
 }
 
 .button-box {
@@ -51,10 +56,32 @@
     border-radius: 10px;
     margin-bottom: 20px;
     padding: 10px;
+    display: flex;
     background-color: hsla(0, 0%, 100%, .3);
     box-shadow: rgba(0, 0, 0, .5);
     border: 1px solid hsla(0, 0%, 100%, .5);
-    backdrop-filter: blur(5px)
+    backdrop-filter: blur(5px);
+    position: relative;
+}
+.edit-button{
+    width: 29px;
+    display: flex;
+    // 修改主轴方向
+    flex-direction: column;
+    align-items: center;
+    position: absolute;
+    top: 0;
+    right: 0px;
+    height: 90px;
+    .box{
+        position: static;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        background-color: transparent;
+    }
+    
 }
 
 .edit {

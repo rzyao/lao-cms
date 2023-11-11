@@ -98,7 +98,7 @@ export const constantRoutes = [
         path: 'edit',
         component: () => import('@/views/edit/index'),
         name: 'Edit',
-        meta: { title: 'Tab', icon: 'tab' },
+        meta: { title: '页面编辑', icon: 'tab' },
         hidden: true
       }
     ]
