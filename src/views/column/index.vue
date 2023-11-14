@@ -32,6 +32,7 @@
                 @click="() => moveDown(data)"
               /> -->
               <el-button
+                v-if="data.is_page == 0"
                 :type="data.is_page ===0? 'primary':'info'"
                 size="mini"
                 @click="() => openModify(data)"
@@ -45,6 +46,7 @@
                 {{ data.is_publish ? "已发布" : "未发布" }}
               </el-button>
               <el-button
+                v-if="data.is_page == 0"
                 type="success"
                 size="mini"
                 @click="() => publish(data)"
@@ -80,6 +82,7 @@
 import ModifyColumn from './ModifyColumn.vue'
 import CreateColumn from './CreateColumn.vue'
 import { getColumnList, deleteColumn, updateColumn } from '@/api/column'
+import { removeParentId } from '@/api/page'
 let id = 1000
 export default {
   name: 'Column',
@@ -122,7 +125,41 @@ export default {
       children.splice(index, 1)
       this.split()
     },
+    uninstall(data) {
+      console.log(data)
+      if (data.id) {
+        // confirm是否删除
+        this.$confirm('确定要将此页面移除吗?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning',
+          page_id: data.id
+        })
+          .then(() => {
+            console.log('removeParentId')
+            removeParentId(data.id).then((res) => {
+              if (res.code === 200) {
+                this.$message({
+                  type: 'success',
+                  message: '移除成功!'
+                })
+                this.getColumnList()
+              }
+            })
+          })
+          .catch(() => {
+            console.log('catch')
+            this.$message({
+              type: 'info',
+              message: '已取消删除'
+            })
+          })
+      }
+    },
     remove(node, data) {
+      if (data.is_page === 1) {
+        return this.uninstall(data)
+      }
       console.log('remove')
       // confirm是否删除
       this.$confirm('此操作将永久删除该栏目, 是否继续?', '提示', {

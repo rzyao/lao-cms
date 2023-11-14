@@ -1,166 +1,186 @@
-
-.box{
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    padding: 20px;
-    background-color: rgba(223, 24, 24, .5);
-    z-index: 100;
-    justify-content: center;
-    align-items: center
+.box {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  padding: 20px;
+//   background-color: rgba(223, 24, 24, 0.5);
+  z-index: 100;
+  justify-content: center;
+  align-items: center;
 }
-
 
 .container {
-    margin: 0 auto;
-    background-color: #fff;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    display: flex;
-    justify-content: center;
-    margin-top: 20px
+  margin: 0 auto;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
 }
 
-.button-line{
-    width: 100%;
-    display: flex;
-    margin-top: 20px
+.button-line {
+  width: 100%;
+  display: flex;
+  margin-top: 20px;
 }
-.button_line_save{
-    width: 100%;
-    display: flex;
-    margin-top: 80px;
-    padding-left: 30px;
+.button_line_save {
+  width: 100%;
+  display: flex;
+  margin-top: 80px;
+  padding-left: 30px;
 }
 
 .button-box {
-    width: 80%;
-    display: flex;
-    justify-content: center;
-    margin-top: 40px
+  width: 80%;
+  display: flex;
+  justify-content: center;
+  margin-top: 40px;
 }
 
 .preview {
-    width: 414px;
-    height: 736px;
-    border: 1px solid #0e0d0d;
-    border-radius: 10px;
-    margin-right: 20px;
-    padding: 20px;
-    background-image: linear-gradient(120deg, #e0c3fc, #8ec5fc)
+  width: 414px;
+  height: 736px;
+  border: 1px solid #0e0d0d;
+  border-radius: 10px;
+  margin-right: 20px;
+  padding: 20px;
+  background-image: linear-gradient(120deg, #e0c3fc, #8ec5fc);
+  //y轴设置超出显示滚动条
+  overflow-y: scroll;
+  overflow-x: hidden;
+  //添加阴影
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+}
+//修改滚动条样式
+.preview::-webkit-scrollbar {
+  width: 2px;
+  height:4px;
+}
+.preview::-webkit-scrollbar-track {
+  background-color: #fff;
+}
+.preview::-webkit-scrollbar-thumb {
+  background-color: #ccc;
+  border-radius: 8px;
+}
+.preview::-webkit-scrollbar-thumb:hover {
+  background-color: #999;
+  //设置鼠标悬停时的箭头样式
+  cursor: pointer;
 }
 
 .unit {
-    border-radius: 10px;
-    margin-bottom: 20px;
-    padding: 10px;
-    display: flex;
-    background-color: hsla(0, 0%, 100%, .3);
-    box-shadow: rgba(0, 0, 0, .5);
-    border: 1px solid hsla(0, 0%, 100%, .5);
-    backdrop-filter: blur(5px);
-    position: relative;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  padding: 10px;
+  display: flex;
+  background-color: hsla(0, 0%, 100%, 0.3);
+  box-shadow: rgba(0, 0, 0, 0.5);
+  border: 1px solid hsla(0, 0%, 100%, 0.5);
+  backdrop-filter: blur(5px);
+  position: relative;
 }
-.edit-button{
-    width: 29px;
+.edit-button {
+  width: 29px;
+  display: flex;
+  // 修改主轴方向
+  flex-direction: column;
+  align-items: center;
+  position: absolute;
+  top: 0;
+  right: 0px;
+  height: 90px;
+  .box {
+    position: static;
     display: flex;
-    // 修改主轴方向
     flex-direction: column;
+    justify-content: center;
     align-items: center;
-    position: absolute;
-    top: 0;
-    right: 0px;
-    height: 90px;
-    .box{
-        position: static;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        background-color: transparent;
-    }
-    
+    background-color: transparent;
+  }
 }
 
 .edit {
-    width: 414px;
-    height: 736px;
-    background-color: #c1e0b7;
-    border: 1px solid #ccc;
-    border-radius: 5px
+  width: 414px;
+  height: 736px;
+  background-color: #c1e0b7;
+  border: 1px solid #ccc;
+  border-radius: 5px;
 }
 
 .audio {
-    width: 50px;
-    height: 50px;
-    transform: scale(.5)
+  width: 50px;
+  height: 50px;
+  transform: scale(0.5);
 }
 
 .inline {
-    display: flex;
-    align-items: center
+  display: flex;
+  align-items: center;
 }
 
 .lao {
-    height: 25px
+  height: 25px;
 }
 
 .circal-box {
-    width: 50px;
-    height: 50px
+  width: 50px;
+  height: 50px;
 }
 
-.circal-box, .circal {
-    display: inline-flex;
-    justify-content: center;
-    align-items: center
+.circal-box,
+.circal {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .circal {
-    width: 40px;
-    height: 40px;
-    background-color: #f1f1f1;
-    border-radius: 50%
+  width: 40px;
+  height: 40px;
+  background-color: #f1f1f1;
+  border-radius: 50%;
 }
 
 .circal .pause {
-    display: inline-flex;
-    width: 0;
-    height: 0;
-    border-top: 8px solid transparent;
-    border-bottom: 8px solid transparent;
-    border-left: 14px solid #46a6ff;
-    margin-left: 5px
+  display: inline-flex;
+  width: 0;
+  height: 0;
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+  border-left: 14px solid #46a6ff;
+  margin-left: 5px;
 }
 
 .circal .play {
-    width: 20px;
-    height: 20px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 5px
+  width: 20px;
+  height: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 5px;
 }
 
 .circal .play .vertical-left {
-    width: 4px;
-    height: 16px;
-    margin-right: 2px;
-    margin-top: 5px;
-    background-color: #46a6ff
+  width: 4px;
+  height: 16px;
+  margin-right: 2px;
+  margin-top: 5px;
+  background-color: #46a6ff;
 }
 
 .circal .play .vertical-right {
-    width: 4px;
-    height: 16px;
-    margin-left: 2px;
-    margin-top: 5px;
-    background-color: #46a6ff
+  width: 4px;
+  height: 16px;
+  margin-left: 2px;
+  margin-top: 5px;
+  background-color: #46a6ff;
 }
 
 .circal:hover {
-    border-radius: 50%;
-    background-color: #e5e5e5
+  border-radius: 50%;
+  background-color: #e5e5e5;
 }

@@ -243,6 +243,8 @@ export default {
         if (res.code === 200) {
           const index = this.pageItems.findIndex((i) => i.unit_id === res.data.id)
           if (index === -1) {
+            console.log(res.data)
+            res.data.unit_id = res.data.id
             this.pageItems.push(res.data)
           }
         }

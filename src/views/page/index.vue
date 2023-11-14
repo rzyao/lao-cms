@@ -39,7 +39,7 @@
               <el-button
                 type="text"
                 size="small"
-                @click="copy(scope.row.id)"
+                @click="publish(scope.row.id,scope.row.is_publish)"
               >{{ scope.row.is_publish?'已发布':'未发布' }}</el-button>
             </template>
           </el-table-column>
@@ -111,7 +111,7 @@
 import ModifyPage from './modifyPage.vue'
 import CreatePage from './createPage.vue'
 import ChooseParent from './chooseParent.vue'
-import { getPageList, deletePage } from '@/api/page'
+import { getPageList, deletePage, updatePage } from '@/api/page'
 export default {
   name: 'Page',
   components: {
@@ -288,6 +288,21 @@ export default {
       } else {
         return
       }
+    },
+    publish(id, is_publish) {
+      const data = {
+        id: id,
+        is_publish: is_publish ? 0 : 1
+      }
+      updatePage(data).then((res) => {
+        if (res.code === 200) {
+          this.$message({
+            type: 'success',
+            message: '操作成功'
+          })
+          this.getPageList()
+        }
+      })
     }
   }
 }

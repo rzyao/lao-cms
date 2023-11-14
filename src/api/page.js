@@ -79,3 +79,10 @@ export function getPageItems(id) {
     data: { id: id }
   })
 }
+export function removeParentId(id) {
+  return request({
+    url: '/api/page/remove-parent-id',
+    method: 'post',
+    data: { id: id }
+  })
+}
