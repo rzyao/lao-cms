@@ -111,7 +111,7 @@ export default {
     append(children) {
       const data = this.currentData
       this.isCreate = false
-      const newChild = { id: id++, label: children.name, children: [] }
+      const newChild = { id: id++, label: children.name, children: [], is_page: 0 }
       if (!data.children) {
         this.$set(data, 'children', [])
       }
